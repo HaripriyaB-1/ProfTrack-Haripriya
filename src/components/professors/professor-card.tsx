@@ -60,7 +60,7 @@ export default function ProfessorCard({ professor, onStatusChange, isStudentView
       <CardFooter>
         <Button asChild className="w-full" variant="outline">
           <Link href={`/professor/${professor.id}`}>
-            View Details & Predict Contact Time
+            View Details
             <ArrowRight className="ml-2 h-4 w-4" />
           </Link>
         </Button>

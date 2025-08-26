@@ -1,12 +1,17 @@
-import { notFound } from 'next/navigation';
+'use client';
+
+import { notFound, useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { initialProfessors } from '@/data/professors';
 import Header from '@/components/layout/header';
 import StatusBadge from '@/components/professors/status-badge';
 import LeaveMessage from '@/components/professors/leave-message';
+import ReceivedMessages from '@/components/professors/received-messages';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Mail, Phone, MapPin } from 'lucide-react';
+import { useAuth } from '@/hooks/use-auth';
+import { useEffect, useState } from 'react';
 
 interface ProfessorPageProps {
   params: {
@@ -15,11 +20,29 @@ interface ProfessorPageProps {
 }
 
 export default function ProfessorPage({ params }: ProfessorPageProps) {
-  const professor = initialProfessors.find(p => p.id === params.id);
+  const { user, loading } = useAuth();
+  const router = useRouter();
 
-  if (!professor) {
-    notFound();
+  const [professor, setProfessor] = useState(initialProfessors.find(p => p.id === params.id));
+
+  useEffect(() => {
+    if (!loading && !user) {
+        router.push('/');
+    }
+    // This is to ensure that even if the professor data is updated elsewhere, we have the latest version.
+    const currentProfessor = initialProfessors.find(p => p.id === params.id);
+    if (!currentProfessor) {
+      notFound();
+    }
+    setProfessor(currentProfessor);
+
+  }, [user, loading, router, params.id]);
+
+  if (loading || !user || !professor) {
+    return null; // or a loading spinner
   }
+
+  const isOwnProfile = user.role === 'professor' && user.email === professor.email;
 
   return (
     <div className="flex flex-col min-h-screen bg-background">
@@ -77,7 +100,7 @@ export default function ProfessorPage({ params }: ProfessorPageProps) {
           </div>
 
           <div className="lg:col-span-2">
-            <LeaveMessage professor={professor} />
+            {isOwnProfile ? <ReceivedMessages professor={professor}/> : <LeaveMessage professor={professor} />}
           </div>
         </div>
       </main>
