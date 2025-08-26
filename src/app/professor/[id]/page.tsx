@@ -1,6 +1,6 @@
 'use client';
 
-import { notFound, useRouter } from 'next/navigation';
+import { notFound, useRouter, useParams } from 'next/navigation';
 import Image from 'next/image';
 import { initialProfessors } from '@/data/professors';
 import Header from '@/components/layout/header';
@@ -14,15 +14,10 @@ import { useAuth } from '@/hooks/use-auth';
 import { useEffect, useState } from 'react';
 import type { Professor } from '@/types';
 
-interface ProfessorPageProps {
-  params: {
-    id: string;
-  };
-}
-
-export default function ProfessorPage({ params }: ProfessorPageProps) {
+export default function ProfessorPage() {
   const { user, loading } = useAuth();
   const router = useRouter();
+  const params = useParams();
 
   const [professor, setProfessor] = useState<Professor | undefined | null>(undefined);
 
@@ -32,15 +27,17 @@ export default function ProfessorPage({ params }: ProfessorPageProps) {
         return;
     }
     
-    const id = params.id;
-    const currentProfessor = initialProfessors.find(p => p.id === id);
-    if (!currentProfessor) {
-      setProfessor(null);
-    } else {
-        setProfessor(currentProfessor);
+    if (params) {
+        const id = params.id as string;
+        const currentProfessor = initialProfessors.find(p => p.id === id);
+        if (!currentProfessor) {
+          setProfessor(null);
+        } else {
+            setProfessor(currentProfessor);
+        }
     }
 
-  }, [user, loading, router, params.id]);
+  }, [user, loading, router, params]);
 
   if (loading || professor === undefined) {
     return null; // or a loading spinner
