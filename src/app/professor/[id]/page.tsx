@@ -25,7 +25,6 @@ export default function ProfessorPage({ params }: ProfessorPageProps) {
   const router = useRouter();
 
   const [professor, setProfessor] = useState<Professor | undefined | null>(undefined);
-  const id = params.id;
 
   useEffect(() => {
     if (!loading && !user) {
@@ -33,6 +32,7 @@ export default function ProfessorPage({ params }: ProfessorPageProps) {
         return;
     }
     
+    const id = params.id;
     const currentProfessor = initialProfessors.find(p => p.id === id);
     if (!currentProfessor) {
       setProfessor(null);
@@ -40,7 +40,7 @@ export default function ProfessorPage({ params }: ProfessorPageProps) {
         setProfessor(currentProfessor);
     }
 
-  }, [user, loading, router, id]);
+  }, [user, loading, router, params.id]);
 
   if (loading || professor === undefined) {
     return null; // or a loading spinner
