@@ -1,42 +1,81 @@
-import Link from 'next/link';
+'use client';
+
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { School, User, UserCog } from 'lucide-react';
+import { School, ArrowRight } from 'lucide-react';
+import { useAuth } from '@/hooks/use-auth';
 
 export default function LandingPage() {
+  const [email, setEmail] = useState('');
+  const [error, setError] = useState('');
+  const router = useRouter();
+  const { pseudoSignIn } = useAuth();
+
+  const handleContinue = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!email) {
+      setError('Please enter an email address.');
+      return;
+    }
+    // Very basic email validation
+    if (!/\S+@\S+\.\S+/.test(email)) {
+        setError('Please enter a valid email address.');
+        return;
+    }
+    setError('');
+
+    const hasNumber = /\d/.test(email);
+    const role = hasNumber ? 'student' : 'professor';
+    
+    pseudoSignIn(email, role);
+
+    if (role === 'student') {
+      router.push('/student-dashboard');
+    } else {
+      router.push('/professor-dashboard');
+    }
+  };
+
   return (
-    <div className="flex flex-col min-h-screen bg-background">
-      <header className="bg-card border-b border-border shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-8">
-          <div className="flex items-center justify-between h-16">
-            <Link href="/" className="flex items-center gap-2 text-2xl font-bold text-primary">
-              <School className="w-8 h-8" />
-              <span>ProfTrack</span>
-            </Link>
-          </div>
-        </div>
-      </header>
-      <main className="flex-1 flex items-center justify-center p-4">
-        <div className="text-center">
-          <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-4">Welcome to ProfTrack</h1>
-          <p className="text-muted-foreground text-lg md:text-xl mb-8">
-            The easiest way to track your professors' status and find the optimal time to connect.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button asChild size="lg">
-              <Link href="/login?role=student">
-                <User className="mr-2" />
-                Student Login
-              </Link>
+    <div className="flex flex-col min-h-screen bg-background items-center justify-center p-4">
+       <Card className="w-full max-w-md">
+        <CardHeader className="text-center">
+            <div className="flex items-center gap-2 text-2xl font-bold text-primary justify-center mb-2">
+                <School className="w-8 h-8" />
+                <span>ProfTrack</span>
+            </div>
+          <CardTitle className="text-2xl">Welcome!</CardTitle>
+          <CardDescription>
+            Enter your university email to continue.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={handleContinue} className="space-y-4">
+            <div className="space-y-2">
+                <Input
+                    id="email"
+                    type="email"
+                    placeholder="you@university.edu"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required
+                    className="h-12 text-base"
+                />
+                <p className="text-xs text-muted-foreground px-2">
+                    Student emails have numbers (e.g., student123@...). Professor emails do not.
+                </p>
+            </div>
+            {error && <p className="text-sm text-destructive">{error}</p>}
+            <Button type="submit" className="w-full" size="lg">
+              Continue
+              <ArrowRight className="ml-2" />
             </Button>
-            <Button asChild size="lg" variant="outline">
-               <Link href="/login?role=professor">
-                <UserCog className="mr-2" />
-                Professor Login
-              </Link>
-            </Button>
-          </div>
-        </div>
-      </main>
+          </form>
+        </CardContent>
+      </Card>
     </div>
   );
 }

@@ -17,8 +17,8 @@ export default function StudentDashboard() {
   const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
-    if (!loading && !user) {
-      router.push('/login?role=student');
+    if (!loading && (!user || user.role !== 'student')) {
+      router.push('/');
     }
   }, [user, loading, router]);
 

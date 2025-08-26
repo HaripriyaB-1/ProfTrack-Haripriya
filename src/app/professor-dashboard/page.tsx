@@ -14,33 +14,40 @@ export default function ProfessorDashboard() {
   const { user, loading } = useAuth();
   const router = useRouter();
   
-  // Find the professor that matches the logged-in user's email
-  // In a real app, you'd fetch this from a database based on the user's ID
-  const [professor, setProfessor] = useState<Professor | undefined>(
-    initialProfessors.find(p => p.email === user?.email)
-  );
+  const [professor, setProfessor] = useState<Professor | undefined>();
 
   useEffect(() => {
-    if (!loading && !user) {
-      router.push('/login?role=professor');
+    if (!loading && (!user || user.role !== 'professor')) {
+      router.push('/');
     }
-    // If the user is loaded and is not a professor in our static data, redirect
-    if (!loading && user && !professor) {
-       // For demo purposes, we'll just assign the first professor to the first signed up professor user
-       const firstProf = initialProfessors[0];
-       if(user.email) {
-          firstProf.email = user.email;
-          setProfessor(firstProf);
-       } else {
-        router.push('/');
-       }
+    
+    if (!loading && user) {
+        // Find a professor whose email matches. If not, assign one.
+        let assignedProfessor = initialProfessors.find(p => p.email === user.email);
+        
+        if (!assignedProfessor) {
+            // This logic assigns a professor to the user if their email is not in the data.
+            // In a real app, you might have a registration flow for professors.
+            // For this demo, we'll try to find an unassigned professor or the first one.
+            const unassignedProfessor = initialProfessors.find(p => p.email.includes('@university.edu'));
+            assignedProfessor = unassignedProfessor || initialProfessors[0];
+            assignedProfessor.email = user.email;
+        }
+        setProfessor(assignedProfessor);
     }
-  }, [user, loading, router, professor]);
+  }, [user, loading, router]);
 
   const handleStatusChange = (professorId: string, newStatus: Professor['status']) => {
     if (professor && professor.id === professorId) {
-      setProfessor({ ...professor, status: newStatus, lastUpdated: new Date().toISOString() });
-      // Here you would also update the database
+      const updatedProfessor = { ...professor, status: newStatus, lastUpdated: new Date().toISOString() };
+      setProfessor(updatedProfessor);
+
+      // In a real app, you would update this in a database.
+      // For demo, we can update the initialProfessors array, but this change won't persist across reloads.
+      const profIndex = initialProfessors.findIndex(p => p.id === professorId);
+      if(profIndex !== -1) {
+        initialProfessors[profIndex] = updatedProfessor;
+      }
     }
   };
   

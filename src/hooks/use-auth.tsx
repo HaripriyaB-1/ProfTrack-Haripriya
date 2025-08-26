@@ -1,16 +1,18 @@
 'use client';
 
 import { useState, useEffect, createContext, useContext, ReactNode } from 'react';
-import { onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut as firebaseSignOut, User } from 'firebase/auth';
-import { auth } from '@/lib/firebase';
-import { useRouter } from 'next/navigation';
+
+// Mock user type
+interface PseudoUser {
+  email: string;
+  role: 'student' | 'professor';
+}
 
 interface AuthContextType {
-  user: User | null;
+  user: PseudoUser | null;
   loading: boolean;
-  signUp: (email: string, password: string, role: string) => Promise<any>;
-  signIn: (email: string, password: string) => Promise<any>;
-  signOut: () => Promise<void>;
+  pseudoSignIn: (email: string, role: 'student' | 'professor') => void;
+  signOut: () => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -20,42 +22,42 @@ interface AuthProviderProps {
 }
 
 export function AuthProvider({ children }: AuthProviderProps) {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<PseudoUser | null>(null);
   const [loading, setLoading] = useState(true);
-  const router = useRouter();
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      setUser(user);
-      setLoading(false);
-    });
-
-    return () => unsubscribe();
+    // Check if user info is in localStorage
+    try {
+      const storedUser = localStorage.getItem('proftrack_user');
+      if (storedUser) {
+        setUser(JSON.parse(storedUser));
+      }
+    } catch (error) {
+        console.error("Failed to parse user from localStorage", error);
+        localStorage.removeItem('proftrack_user');
+    }
+    setLoading(false);
   }, []);
 
-  const signUp = async (email: string, password: string, role: string) => {
-    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-    // In a real app, you'd store the role in Firestore or another database
-    // associated with the user's UID.
-    // For this demo, we'll just log it.
-    console.log('User signed up with role:', role);
-    return userCredential;
+  const pseudoSignIn = (email: string, role: 'student' | 'professor') => {
+    const newUser: PseudoUser = { email, role };
+    localStorage.setItem('proftrack_user', JSON.stringify(newUser));
+    setUser(newUser);
   };
 
-  const signIn = (email: string, password: string) => {
-    return signInWithEmailAndPassword(auth, email, password);
-  };
-
-  const signOut = async () => {
-    await firebaseSignOut(auth);
-    router.push('/');
+  const signOut = () => {
+    localStorage.removeItem('proftrack_user');
+    setUser(null);
+    // Redirect to home page
+    if (typeof window !== 'undefined') {
+        window.location.href = '/';
+    }
   };
   
   const value = {
     user,
     loading,
-    signUp,
-    signIn,
+    pseudoSignIn,
     signOut,
   };
 

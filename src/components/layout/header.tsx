@@ -1,17 +1,15 @@
+'use client';
+
 import { School, LogOut } from 'lucide-react';
 import Link from 'next/link';
 import { useAuth } from '@/hooks/use-auth';
 import { Button } from '@/components/ui/button';
-import { useRouter } from 'next/navigation';
-
 
 export default function Header() {
   const { user, signOut } = useAuth();
-  const router = useRouter();
 
   const handleSignOut = async () => {
-    await signOut();
-    router.push('/');
+    signOut();
   }
 
   return (
@@ -23,10 +21,13 @@ export default function Header() {
             <span>ProfTrack</span>
           </Link>
           {user && (
-            <Button variant="ghost" onClick={handleSignOut}>
-              <LogOut className="mr-2 h-4 w-4" />
-              Sign Out
-            </Button>
+            <div className="flex items-center gap-4">
+              <span className="text-sm text-muted-foreground hidden sm:inline">{user.email}</span>
+              <Button variant="ghost" onClick={handleSignOut}>
+                <LogOut className="mr-2 h-4 w-4" />
+                Sign Out
+              </Button>
+            </div>
           )}
         </div>
       </div>
