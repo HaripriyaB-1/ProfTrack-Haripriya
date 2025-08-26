@@ -23,7 +23,7 @@ export default function ProfessorCard({ professor, onStatusChange, isStudentView
     : 'Update time not available';
 
   return (
-    <Card className="flex flex-col transition-all hover:shadow-lg hover:-translate-y-1">
+    <Card className="flex flex-col transition-all hover:shadow-lg hover:-translate-y-1 border">
       <CardHeader>
         <div className="flex items-center gap-4">
           <Avatar className="h-16 w-16">
