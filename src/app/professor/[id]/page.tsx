@@ -12,6 +12,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Mail, Phone, MapPin } from 'lucide-react';
 import { useAuth } from '@/hooks/use-auth';
 import { useEffect, useState } from 'react';
+import type { Professor } from '@/types';
 
 interface ProfessorPageProps {
   params: {
@@ -23,26 +24,33 @@ export default function ProfessorPage({ params }: ProfessorPageProps) {
   const { user, loading } = useAuth();
   const router = useRouter();
 
-  const [professor, setProfessor] = useState(initialProfessors.find(p => p.id === params.id));
+  const [professor, setProfessor] = useState<Professor | undefined | null>(undefined);
 
   useEffect(() => {
     if (!loading && !user) {
         router.push('/');
+        return;
     }
-    // This is to ensure that even if the professor data is updated elsewhere, we have the latest version.
+    
     const currentProfessor = initialProfessors.find(p => p.id === params.id);
     if (!currentProfessor) {
-      notFound();
+      setProfessor(null); // Explicitly set to null to indicate not found
+    } else {
+        setProfessor(currentProfessor);
     }
-    setProfessor(currentProfessor);
 
   }, [user, loading, router, params.id]);
 
-  if (loading || !user || !professor) {
+  if (loading || professor === undefined) {
     return null; // or a loading spinner
   }
 
-  const isOwnProfile = user.role === 'professor' && user.email === professor.email;
+  if (professor === null) {
+      notFound();
+  }
+
+
+  const isOwnProfile = user && user.role === 'professor' && user.email === professor.email;
 
   return (
     <div className="flex flex-col min-h-screen bg-background">
