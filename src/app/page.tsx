@@ -57,15 +57,15 @@ export default function LandingPage() {
 
   return (
     <div className="flex flex-col min-h-screen bg-background items-center justify-center p-4">
-       <Card className="w-full max-w-md glow-shadow">
+       <Card className="w-full max-w-md glow-shadow dark:border-primary/20">
         <CardHeader className="text-center">
-            <div className="flex items-center gap-2 text-2xl font-bold text-primary justify-center mb-2">
-                <School className="w-8 h-8" />
+            <div className="flex items-center gap-3 text-3xl font-bold text-primary justify-center mb-2">
+                <School className="w-9 h-9" />
                 <span>ProfTrack</span>
             </div>
-          <CardTitle className="text-2xl">Welcome!</CardTitle>
+          <CardTitle className="text-2xl font-semibold tracking-tight">Welcome!</CardTitle>
           <CardDescription>
-            Enter your SSN email to continue.
+            Enter your SSN email to get started.
           </CardDescription>
         </CardHeader>
         <CardContent>
