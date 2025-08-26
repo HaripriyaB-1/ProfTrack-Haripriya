@@ -12,4 +12,5 @@ export interface Professor {
   phone: string;
   cabinLocation: string;
   historicalStatusData: string;
+  lastUpdated?: string;
 }

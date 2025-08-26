@@ -31,6 +31,7 @@ export const initialProfessors: Professor[] = [
     phone: '123-456-7890',
     cabinLocation: 'Tech Building, Room 301',
     historicalStatusData: generateHistoricalData(),
+    lastUpdated: new Date(Date.now() - 1000 * 60 * 5).toISOString(),
   },
   {
     id: '2',
@@ -42,6 +43,7 @@ export const initialProfessors: Professor[] = [
     phone: '123-456-7891',
     cabinLocation: 'Engin. Hall, Room 212',
     historicalStatusData: generateHistoricalData(),
+    lastUpdated: new Date(Date.now() - 1000 * 60 * 12).toISOString(),
   },
   {
     id: '3',
@@ -53,6 +55,7 @@ export const initialProfessors: Professor[] = [
     phone: '123-456-7892',
     cabinLocation: 'Science Center, Room 450',
     historicalStatusData: generateHistoricalData(),
+    lastUpdated: new Date(Date.now() - 1000 * 60 * 30).toISOString(),
   },
   {
     id: '4',
@@ -64,6 +67,7 @@ export const initialProfessors: Professor[] = [
     phone: '123-456-7893',
     cabinLocation: 'Humanities Bldg, Room 105',
     historicalStatusData: generateHistoricalData(),
+    lastUpdated: new Date(Date.now() - 1000 * 60 * 60 * 2).toISOString(),
   },
   {
     id: '5',
@@ -75,6 +79,7 @@ export const initialProfessors: Professor[] = [
     phone: '123-456-7894',
     cabinLocation: 'Math Tower, Room 808',
     historicalStatusData: generateHistoricalData(),
+    lastUpdated: new Date(Date.now() - 1000 * 60 * 60 * 24).toISOString(),
   },
   {
     id: '6',
@@ -86,5 +91,6 @@ export const initialProfessors: Professor[] = [
     phone: '123-456-7895',
     cabinLocation: 'Tech Building, Room 315',
     historicalStatusData: generateHistoricalData(),
+    lastUpdated: new Date(Date.now() - 1000 * 60 * 45).toISOString(),
   },
 ];

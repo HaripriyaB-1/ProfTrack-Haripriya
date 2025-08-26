@@ -1,21 +1,27 @@
 'use client';
 
 import Link from 'next/link';
-import Image from 'next/image';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import StatusBadge from './status-badge';
 import StatusSelector from './status-selector';
 import type { Professor } from '@/types';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, Clock } from 'lucide-react';
+import { formatDistanceToNow } from 'date-fns';
 
 interface ProfessorCardProps {
   professor: Professor;
   onStatusChange: (professorId: string, newStatus: Professor['status']) => void;
+  isStudentView: boolean;
 }
 
-export default function ProfessorCard({ professor, onStatusChange }: ProfessorCardProps) {
+export default function ProfessorCard({ professor, onStatusChange, isStudentView }: ProfessorCardProps) {
+  
+  const lastUpdatedText = professor.lastUpdated 
+    ? `Updated ${formatDistanceToNow(new Date(professor.lastUpdated), { addSuffix: true })}`
+    : 'Update time not available';
+
   return (
     <Card className="flex flex-col transition-all hover:shadow-lg hover:-translate-y-1">
       <CardHeader>
@@ -35,13 +41,21 @@ export default function ProfessorCard({ professor, onStatusChange }: ProfessorCa
           <h4 className="text-sm font-medium text-muted-foreground mb-2">Current Status</h4>
           <StatusBadge status={professor.status} />
         </div>
-        <div>
-          <h4 className="text-sm font-medium text-muted-foreground mb-2">Update Status (Professor View)</h4>
-          <StatusSelector
-            currentStatus={professor.status}
-            onStatusChange={(newStatus) => onStatusChange(professor.id, newStatus)}
-          />
-        </div>
+        
+        {isStudentView ? (
+           <div className="text-xs text-muted-foreground flex items-center gap-1.5">
+             <Clock className="w-3 h-3"/> 
+             <span>{lastUpdatedText}</span>
+           </div>
+        ) : (
+          <div>
+            <h4 className="text-sm font-medium text-muted-foreground mb-2">Update Your Status</h4>
+            <StatusSelector
+              currentStatus={professor.status}
+              onStatusChange={(newStatus) => onStatusChange(professor.id, newStatus)}
+            />
+          </div>
+        )}
       </CardContent>
       <CardFooter>
         <Button asChild className="w-full" variant="outline">
