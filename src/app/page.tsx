@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { School, ArrowRight } from 'lucide-react';
 import { useAuth } from '@/hooks/use-auth';
+import { initialProfessors } from '@/data/professors';
 
 export default function LandingPage() {
   const [email, setEmail] = useState('');
@@ -16,20 +17,35 @@ export default function LandingPage() {
 
   const handleContinue = (e: React.FormEvent) => {
     e.preventDefault();
+    setError('');
+
     if (!email) {
       setError('Please enter an email address.');
       return;
     }
+
+    if (!email.endsWith('@ssn.edu.in')) {
+      setError('Invalid email domain. Please use a @ssn.edu.in address.');
+      return;
+    }
+    
     // Very basic email validation
     if (!/\S+@\S+\.\S+/.test(email)) {
         setError('Please enter a valid email address.');
         return;
     }
-    setError('');
 
-    const hasNumber = /\d/.test(email);
+    const hasNumber = /\d/.test(email.split('@')[0]);
     const role = hasNumber ? 'student' : 'professor';
-    
+
+    if (role === 'professor') {
+        const isRegisteredProfessor = initialProfessors.some(p => p.email.toLowerCase() === email.toLowerCase());
+        if (!isRegisteredProfessor) {
+            setError('Email not registered. Please contact administration.');
+            return;
+        }
+    }
+
     pseudoSignIn(email, role);
 
     if (role === 'student') {
@@ -41,7 +57,7 @@ export default function LandingPage() {
 
   return (
     <div className="flex flex-col min-h-screen bg-background items-center justify-center p-4">
-       <Card className="w-full max-w-md">
+       <Card className="w-full max-w-md glow-shadow">
         <CardHeader className="text-center">
             <div className="flex items-center gap-2 text-2xl font-bold text-primary justify-center mb-2">
                 <School className="w-8 h-8" />
@@ -49,7 +65,7 @@ export default function LandingPage() {
             </div>
           <CardTitle className="text-2xl">Welcome!</CardTitle>
           <CardDescription>
-            Enter your university email to continue.
+            Enter your SSN email to continue.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -58,15 +74,12 @@ export default function LandingPage() {
                 <Input
                     id="email"
                     type="email"
-                    placeholder="you@university.edu"
+                    placeholder="you@ssn.edu.in"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     required
                     className="h-12 text-base"
                 />
-                <p className="text-xs text-muted-foreground px-2">
-                    Student emails have numbers (e.g., student123@...). Professor emails do not.
-                </p>
             </div>
             {error && <p className="text-sm text-destructive">{error}</p>}
             <Button type="submit" className="w-full" size="lg">

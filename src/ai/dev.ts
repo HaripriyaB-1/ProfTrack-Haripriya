@@ -1,4 +1,4 @@
 import { config } from 'dotenv';
 config();
 
-import '@/ai/flows/predict-optimal-contact-time.ts';
+// This file is intentionally left empty as the AI functionality has been removed.

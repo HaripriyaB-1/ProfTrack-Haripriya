@@ -3,7 +3,7 @@ import Image from 'next/image';
 import { initialProfessors } from '@/data/professors';
 import Header from '@/components/layout/header';
 import StatusBadge from '@/components/professors/status-badge';
-import OptimalContact from '@/components/professors/optimal-contact';
+import LeaveMessage from '@/components/professors/leave-message';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Mail, Phone, MapPin } from 'lucide-react';
@@ -77,7 +77,7 @@ export default function ProfessorPage({ params }: ProfessorPageProps) {
           </div>
 
           <div className="lg:col-span-2">
-            <OptimalContact professor={professor} />
+            <LeaveMessage professor={professor} />
           </div>
         </div>
       </main>
